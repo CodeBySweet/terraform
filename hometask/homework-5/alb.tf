@@ -4,7 +4,7 @@ resource "aws_lb" "alb-hm" {
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.alb-sg.id]
-  subnets            = aws_subnet.public-subnet[*].id
+  subnets            = data.terraform_remote_state.network.outputs.public_subnet_ids[*]
 
   tags = merge(
     { Name = format(local.Name, "ALB-HM") },
@@ -19,7 +19,7 @@ resource "aws_lb_target_group" "alb-tg" {
   target_type = "instance"
   port        = var.sg_ports[1]
   protocol    = "HTTP"
-  vpc_id      = aws_vpc.my-vpc.id
+  vpc_id      = data.terraform_remote_state.network.outputs.vpc_id
 }
 
 
@@ -40,7 +40,7 @@ resource "aws_lb_listener" "front_end" {
 resource "aws_security_group" "alb-sg" {
   name        = "ALB-SG"
   description = "ALB SG"
-  vpc_id      = aws_vpc.my-vpc.id
+  vpc_id      = data.terraform_remote_state.network.outputs.vpc_id
   tags = merge(
     { Name = format(local.Name, "alb-sg") },
     local.common_tags
@@ -77,7 +77,7 @@ resource "aws_launch_template" "launch_template" {
 
   network_interfaces {
     associate_public_ip_address = false
-    subnet_id                   = aws_subnet.private-subnet[0].id
+    subnet_id                   = data.terraform_remote_state.network.outputs.public_subnet_ids[0]
     security_groups             = [aws_security_group.lt-sg.id]
   }
 
@@ -97,7 +97,7 @@ resource "aws_launch_template" "launch_template" {
 resource "aws_security_group" "lt-sg" {
   name        = "LT-SG"
   description = "LT SG"
-  vpc_id      = aws_vpc.my-vpc.id
+  vpc_id      = data.terraform_remote_state.network.outputs.vpc_id
   tags = merge(
     { Name = format(local.Name, "lt-sg") },
   local.common_tags)
@@ -105,12 +105,12 @@ resource "aws_security_group" "lt-sg" {
 
 # Inbound Rules for the Launch Template's Security Group
 resource "aws_security_group_rule" "lt_ingress_rules" {
-  security_group_id = aws_security_group.lt-sg.id
-  cidr_blocks       = ["0.0.0.0/0"]
-  from_port         = var.sg_ports[1]
-  protocol          = "tcp"
-  to_port           = var.sg_ports[1]
-  type              = "ingress"
+  security_group_id        = aws_security_group.lt-sg.id
+  source_security_group_id = aws_security_group.alb-sg.id
+  from_port                = var.sg_ports[1]
+  protocol                 = "tcp"
+  to_port                  = var.sg_ports[1]
+  type                     = "ingress"
 }
 
 # Launch Template's Security Group's Outbound Rules

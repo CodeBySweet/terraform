@@ -10,7 +10,7 @@ resource "aws_autoscaling_group" "asg-hm" {
     version = "$Latest"
   }
 
-  vpc_zone_identifier       = aws_subnet.private-subnet[*].id
+  vpc_zone_identifier       = data.terraform_remote_state.network.outputs.private_subnets_ids[*]
   target_group_arns         = [aws_lb_target_group.alb-tg.arn]
   health_check_grace_period = 300
   health_check_type         = "ELB"
