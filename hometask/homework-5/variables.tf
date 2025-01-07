@@ -69,6 +69,44 @@ variable "alb_name" {
 
 
 #################### Naming and Tagging #################### 
+variable "tags" {
+  type = list(object({
+    key                 = string
+    value               = string
+    propagate_at_launch = bool
+  }))
+  default = [{
+    key                 = "cloud"
+    value               = "aws"
+    propagate_at_launch = true
+    },
+    {
+      key                 = "region"
+      value               = "use1"
+      propagate_at_launch = true
+    },
+    {
+      key                 = "Name"
+      value               = "ASG"
+      propagate_at_launch = true
+    },
+    {
+      key                 = "team"
+      value               = "DevOps"
+      propagate_at_launch = true
+    },
+    {
+      key                 = "project"
+      value               = "ALB"
+      propagate_at_launch = true
+    },
+    {
+      key                 = "app_tier"
+      value               = "Frontend"
+      propagate_at_launch = true
+  }]
+}
+
 variable "cloud" {
   default = "aws"
 }

@@ -1,4 +1,8 @@
 
+############### Terraform Remote State ###############
+/* This block of code fetches data from 'hometask/homework-4/terraform.tfstate,' 
+such as the VPC ID and Subnet IDs.
+*/
 data "terraform_remote_state" "network" {
   backend = "s3"
 

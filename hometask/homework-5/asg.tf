@@ -15,10 +15,20 @@ resource "aws_autoscaling_group" "asg-hm" {
   health_check_grace_period = 300
   health_check_type         = "ELB"
 
-  tag {
-    key                 = "Name"
-    value               = "ASG Instance"
-    propagate_at_launch = false
+  /* 
+ Added a dynamic block to handle tags dynamically, avoiding the need to define multiple tags explicitly.
+ This iterates over the `var.tags` variable, allowing the specification of multiple tags in a structured format.
+ Each tag includes a key, value, and the `propagate_at_launch` property.
+ */
+  dynamic "tag" {
+    for_each = var.tags
+    content {
+      key                 = tag.value.key
+      value               = tag.value.value
+      propagate_at_launch = tag.value.propagate_at_launch
+    }
   }
 
 }
+
+
