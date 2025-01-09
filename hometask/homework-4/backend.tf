@@ -1,6 +1,6 @@
 terraform {
   backend "s3" {
-    bucket = "terraform-homework-4-shirin"
+    bucket = "terraform-homework-shirin"
     key    = "hometask/homework-4/terrafrom.tfstate"
     region = "us-east-1"
   }
