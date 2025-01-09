@@ -39,7 +39,7 @@ locals {
     Department = var.department
     Team       = var.team
     Project    = var.project
-    ManagedBy  = var.maanged_by
+    ManagedBy  = var.managed_by
     Owner      = var.owner
   }
 }

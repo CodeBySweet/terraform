@@ -65,7 +65,7 @@ variable "department" {
   default = "finance"
 }
 
-variable "maanged_by" {
+variable "managed_by" {
   default = "terraform"
 }
 
